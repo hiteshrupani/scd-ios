@@ -8,38 +8,23 @@
 import SwiftUI
 import PhotosUI
 
-struct ContentView: View {
+struct DashboardView: View {
     
     @StateObject private var vm = ViewModel()
     @State private var photosPickerItem: PhotosPickerItem?
     
     var body: some View {
-        VStack {
-            // MARK: - Image
-            Image(uiImage: (vm.image) ?? UIImage(named: "Placeholder")!)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
-                .clipShape(RoundedRectangle(cornerRadius: 17))
-                .padding()
+        ZStack {
+//            Color(.label)
+//                .ignoresSafeArea()
             
-            HStack {
-                // MARK: - Upload Image Button
-                PhotosPicker(selection: $photosPickerItem, matching: .images) {
-                    VStack {
-                        Image(systemName: "photo.badge.plus")
-                            .imageScale(.large)
-                            .padding(.bottom)
-                        Text("Upload Image")
-                            .font(.subheadline)
-                            
-                    }
-                    .foregroundStyle(Color.white)
-                    .frame(width: UIScreen.main.bounds.width * 0.375, height: UIScreen.main.bounds.width * 0.35)
-                    .background {
-                        RoundedRectangle(cornerRadius: 17)
-                    }
-                }
+            VStack {
+                Text("Upload image to \ndetect skin cancer..")
+                    .font(.largeTitle)
+                    .bold()
+                    .foregroundStyle(Color(.label))
+                    .padding()
+                    .padding(.top)
                 
                 Spacer()
                 
@@ -48,25 +33,55 @@ struct ContentView: View {
                     
                 } label: {
                     VStack {
-                        Image(systemName: "magnifyingglass")
-                            .imageScale(.large)
-                            .padding(.bottom)
-                        Text("Detect")
-                            .font(.subheadline)
+                        Text("\(Image(systemName: "magnifyingglass")) Start Detection")
+                            .font(.title2)
+                            .fontWeight(.semibold)
                             
                     }
-                    .foregroundStyle(Color.white)
-                    .frame(width: UIScreen.main.bounds.width * 0.375, height: UIScreen.main.bounds.width * 0.35)
+                    .foregroundStyle(Color(.systemBackground))
+                    .padding()
                     .background {
-                        RoundedRectangle(cornerRadius: 17)
+                        Capsule()
+                            .frame(width: UIScreen.main.bounds.width * 0.75)
                     }
                 }
                 .disabled(vm.image == nil)
-                
+                .padding()
             }
-            .frame(width: UIScreen.main.bounds.width * 0.8)
+            
+            // MARK: - Upload Image
+            PhotosPicker(selection: $photosPickerItem, matching: .images) {
+                ZStack {
+                    Image(uiImage: (vm.image) ?? UIImage(named: "Placeholder")!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
+                        .clipShape(RoundedRectangle(cornerRadius: 17))
+                        .padding()
+                    
+                    if vm.image == nil {
+                        VStack {
+                            Spacer()
+                            
+                            HStack {
+                                Spacer()
+                                
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 75)
+                                    .imageScale(.large)
+                                    .foregroundStyle(Color(.label))
+                                    .zIndex(2.0)
+                            }
+                        }
+                    }
+                }
+                .frame(width: UIScreen.main.bounds.width * 0.9, height: UIScreen.main.bounds.width * 0.9)
+            }
+            
         }
-        .padding()
+        .accentColor(Color(.label))
         .onChange(of: photosPickerItem) { _, _ in
             Task {
                 if let photosPickerItem,
@@ -82,5 +97,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    DashboardView()
 }
