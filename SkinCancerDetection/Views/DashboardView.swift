@@ -13,12 +13,14 @@ struct DashboardView: View {
     @StateObject private var vm = ViewModel()
     @State private var photosPickerItem: PhotosPickerItem?
     
+    @State private var width100 = UIScreen.main.bounds.width
+    @State private var width80 = UIScreen.main.bounds.width * 0.8
+    
     var body: some View {
         ZStack {
-//            Color(.label)
-//                .ignoresSafeArea()
             
             VStack {
+                // MARK: - Header
                 Text("Upload image to \ndetect skin cancer..")
                     .font(.largeTitle)
                     .bold()
@@ -30,19 +32,24 @@ struct DashboardView: View {
                 
                 // MARK: - Detect Button
                 Button {
+                    vm.detect(vm.image!) { result in
+                        DispatchQueue.main.async {
+                            vm.result = result
+                        }
+                    }
                     
                 } label: {
                     VStack {
                         Text("\(Image(systemName: "magnifyingglass")) Start Detection")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            
+                        
                     }
                     .foregroundStyle(Color(.systemBackground))
                     .padding()
                     .background {
                         Capsule()
-                            .frame(width: UIScreen.main.bounds.width * 0.75)
+                            .frame(width: UIScreen.main.bounds.width * 0.8)
                     }
                 }
                 .disabled(vm.image == nil)
@@ -52,34 +59,51 @@ struct DashboardView: View {
             // MARK: - Upload Image
             PhotosPicker(selection: $photosPickerItem, matching: .images) {
                 ZStack {
-                    Image(uiImage: (vm.image) ?? UIImage(named: "Placeholder")!)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
-                        .clipShape(RoundedRectangle(cornerRadius: 17))
-                        .padding()
-                    
-                    if vm.image == nil {
+                    // Check if the image exists
+                    if let image = vm.image {
                         VStack {
-                            Spacer()
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: width80, height: width80)
+                                .clipShape(RoundedRectangle(cornerRadius: 17))
+                                .padding( )
                             
-                            HStack {
-                                Spacer()
-                                
-                                Image(systemName: "plus.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 75)
-                                    .imageScale(.large)
-                                    .foregroundStyle(Color(.label))
-                                    .zIndex(2.0)
+                            if let result = vm.result {
+                                VStack {
+                                    Text ("Result")
+                                        .font(.title2)
+                                        .fontWeight(.light)
+                                        .foregroundStyle(Color(.label))
+                                    
+                                    Text (result.capitalized)
+                                        .font(.largeTitle)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color(.label))
+                                }
                             }
                         }
+                        .frame(width: width80, height: width100)
+                        
+                    } else {
+                        // Placeholder
+                        ZStack {
+                            Color(.systemGray3)
+                                .aspectRatio(1, contentMode: .fill)
+                            
+                            Image(systemName: "plus")
+                                .resizable()
+                                .foregroundStyle(.white)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: UIScreen.main.bounds.width * 0.3)
+                                .padding()
+                        }
+                        .frame(width: width80, height: width80)
+                        .clipShape(RoundedRectangle(cornerRadius: 17))
                     }
                 }
-                .frame(width: UIScreen.main.bounds.width * 0.9, height: UIScreen.main.bounds.width * 0.9)
+                
             }
-            
         }
         .accentColor(Color(.label))
         .onChange(of: photosPickerItem) { _, _ in
@@ -88,6 +112,7 @@ struct DashboardView: View {
                    let data = try? await photosPickerItem.loadTransferable(type: Data.self) {
                     if let image = UIImage(data: data) {
                         vm.image = image
+                        vm.result = nil
                     }
                 }
                 photosPickerItem = nil
