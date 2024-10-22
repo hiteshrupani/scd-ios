@@ -18,6 +18,8 @@ class ViewModel: ObservableObject {
     
     @Published var resultProbability: [String: Double]?
     
+    @Published var detectionHistory: [DetectionHistoryItem] = []
+    
     func detect(_ image: UIImage, completion: @escaping (String?) -> Void) {
         // Loading the MLModel
         guard let model = try? VNCoreMLModel(for: SCD_BenignMalignant().model) else {

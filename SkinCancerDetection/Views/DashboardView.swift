@@ -35,6 +35,8 @@ struct DashboardView: View {
                     vm.detect(vm.image!) { result in
                         DispatchQueue.main.async {
                             vm.result = result
+                            vm.detectionHistory.append(DetectionHistoryItem(result: result!,
+                                                                            date: Date()))
                         }
                     }
                     
