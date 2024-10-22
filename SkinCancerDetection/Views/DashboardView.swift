@@ -10,7 +10,7 @@ import PhotosUI
 
 struct DashboardView: View {
     
-    @StateObject private var vm = ViewModel()
+    @ObservedObject var vm: ViewModel
     @State private var photosPickerItem: PhotosPickerItem?
     
     @State private var width100 = UIScreen.main.bounds.width
@@ -18,10 +18,9 @@ struct DashboardView: View {
     
     var body: some View {
         ZStack {
-            
             VStack {
                 // MARK: - Header
-                Text("Upload image to \ndetect skin cancer..")
+                Text("Detect Skin Cancer")
                     .font(.largeTitle)
                     .bold()
                     .foregroundStyle(Color(.label))
@@ -35,8 +34,11 @@ struct DashboardView: View {
                     vm.detect(vm.image!) { result in
                         DispatchQueue.main.async {
                             vm.result = result
+                            
+                            // appending to history
                             vm.detectionHistory.append(DetectionHistoryItem(result: result!,
                                                                             date: Date()))
+                            print(vm.detectionHistory)
                         }
                     }
                     
@@ -124,5 +126,5 @@ struct DashboardView: View {
 }
 
 #Preview {
-    DashboardView()
+    DashboardView(vm: ViewModel())
 }

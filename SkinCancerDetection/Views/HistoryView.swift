@@ -9,10 +9,10 @@ import SwiftUI
 
 struct HistoryView: View {
     
-    @StateObject private var vm = ViewModel()
+    @ObservedObject var vm: ViewModel
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             Text ("History")
                 .font(.largeTitle)
                 .bold()
@@ -24,7 +24,7 @@ struct HistoryView: View {
                 Text("Result")
                 Spacer()
                 Text("Recorded Time")
-                    .frame(width: UIScreen.main.bounds.width / 2.6, alignment: .leading)
+                    .frame(width: UIScreen.main.bounds.width / 2.6, alignment: .trailing)
             }
             .font(.subheadline)
             .foregroundStyle(Color.gray)
@@ -41,5 +41,5 @@ struct HistoryView: View {
 }
 
 #Preview {
-    HistoryView()
+    HistoryView(vm: ViewModel())
 }

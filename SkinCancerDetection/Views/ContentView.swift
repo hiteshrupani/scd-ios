@@ -10,15 +10,17 @@ import PhotosUI
 
 struct ContentView: View {
     
+    @StateObject var vm = ViewModel()
+    
     var body: some View {
         TabView {
-            DashboardView()
+            DashboardView(vm: vm)
                 .tabItem {
                     Image(systemName: "viewfinder")
                     Text("Detect")
                 }
             
-            HistoryView()
+            HistoryView(vm: vm)
                 .tabItem {
                     Image(systemName: "clock")
                     Text("History")
