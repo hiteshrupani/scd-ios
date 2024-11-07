@@ -20,22 +20,44 @@ struct HistoryView: View {
                 .padding()
                 .padding(.top)
             
-            HStack {
-                Text("Result")
-                Spacer()
-                Text("Recorded Time")
-                    .frame(width: UIScreen.main.bounds.width / 2.6, alignment: .trailing)
-            }
-            .font(.subheadline)
-            .foregroundStyle(Color.gray)
-            .padding(.horizontal)
-            
-            List {
-                ForEach (vm.detectionHistory) {item in
-                    HistoryItemView(item: item)
+            if !vm.detectionHistory.isEmpty {
+                HStack {
+                    Text("Result")
+                    Spacer()
+                    Text("Date")
+                        .frame(width: UIScreen.main.bounds.width / 2.6, alignment: .trailing)
                 }
+                .font(.subheadline)
+                .foregroundStyle(Color.gray)
+                .padding(.horizontal)
+                
+                List {
+                    ForEach (vm.detectionHistory) {item in
+                        HistoryItemView(item: item)
+                    }
+                }
+                .listStyle(.plain)
+            } else {
+                Spacer()
+                
+                VStack {
+                    Image(systemName: "exclamationmark.magnifyingglass")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: UIScreen.main.bounds.width * 0.25)
+                        .padding(.bottom)
+                    
+                    Text("No results found!")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                    
+                    Text("Start scanning to see results!")
+                        .font(.subheadline)
+                    
+                }
+                
+                Spacer()
             }
-            .listStyle(.plain)
         }
     }
 }

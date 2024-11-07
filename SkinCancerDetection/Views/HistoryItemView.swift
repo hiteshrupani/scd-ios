@@ -15,11 +15,17 @@ struct HistoryItemView: View {
         HStack {
             Text(item.result.capitalized)
                 .bold()
+                .font(.title3)
             
             Spacer()
             
-            Text(item.date.formatted(.dateTime))
-                .fontWeight(.light)
+            VStack (alignment: .trailing) {
+                Text(item.date.formatted(date: .omitted, time: .shortened))
+                
+                Text(item.date.formatted(date: .abbreviated, time: .omitted))
+            }
+            .fontWeight(.regular)
+            .font(.subheadline)
                 
         }
     }
