@@ -9,28 +9,22 @@ import SwiftUI
 
 struct HistoryItemView: View {
     
-    var item: DetectionHistoryItem
+    var item: DetectionHistoryEntity
     
     var body: some View {
         HStack {
-            Text(item.result.capitalized)
-                .bold()
-                .font(.title3)
+            Text(item.result?.capitalized ?? "N/A")
+                .font(.headline)
             
             Spacer()
             
-            VStack (alignment: .trailing) {
-                Text(item.date.formatted(date: .omitted, time: .shortened))
+            VStack (alignment: .trailing, spacing: 2) {
+                Text(item.date?.formatted(date: .omitted, time: .shortened) ?? "N/A")
                 
-                Text(item.date.formatted(date: .abbreviated, time: .omitted))
+                Text((item.date?.formatted(date: .abbreviated, time: .omitted)) ?? "N/A")
             }
-            .fontWeight(.regular)
             .font(.subheadline)
                 
         }
     }
-}
-
-#Preview {
-    HistoryItemView(item: DetectionHistoryItem(result: "Benign", date: Date()))
 }

@@ -36,9 +36,11 @@ struct DashboardView: View {
                             vm.result = result
                             
                             // appending to history
-                            vm.detectionHistory.append(DetectionHistoryItem(result: result!,
-                                                                            date: Date()))
+                            vm.detectionHistory.append(DetectionHistoryItem(result: result!, date: Date()))
                             print(vm.detectionHistory)
+                            
+                            // adding to HistoryContainer
+                            vm.addHistory(date: Date(), result: result!)
                         }
                     }
                     
@@ -60,7 +62,7 @@ struct DashboardView: View {
                 .padding()
             }
             
-            // MARK: - Upload Image
+            // MARK: - Upload Image Button
             PhotosPicker(selection: $photosPickerItem, matching: .images) {
                 ZStack {
                     // Check if the image exists
@@ -73,6 +75,7 @@ struct DashboardView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 17))
                                 .padding( )
                             
+                            // MARK: - Result
                             if let result = vm.result {
                                 VStack {
                                     Text ("Result")
@@ -90,7 +93,7 @@ struct DashboardView: View {
                         .frame(width: width80, height: width100)
                         
                     } else {
-                        // Placeholder
+                        // MARK: - Placeholder Image
                         ZStack {
                             Color(.systemGray3)
                                 .aspectRatio(1, contentMode: .fill)
@@ -115,11 +118,12 @@ struct DashboardView: View {
                 if let photosPickerItem,
                    let data = try? await photosPickerItem.loadTransferable(type: Data.self) {
                     if let image = UIImage(data: data) {
+                        // updating view model
                         vm.image = image
                         vm.result = nil
                     }
                 }
-                photosPickerItem = nil
+                photosPickerItem = nil // for next time
             }
         }
     }

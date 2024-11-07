@@ -20,7 +20,7 @@ struct HistoryView: View {
                 .padding()
                 .padding(.top)
             
-            if !vm.detectionHistory.isEmpty {
+            if !vm.savedHistory.isEmpty {
                 HStack {
                     Text("Result")
                     Spacer()
@@ -32,11 +32,13 @@ struct HistoryView: View {
                 .padding(.horizontal)
                 
                 List {
-                    ForEach (vm.detectionHistory) {item in
+                    ForEach (vm.savedHistory) {item in
                         HistoryItemView(item: item)
                     }
+                    .onDelete(perform: vm.deleteHistory)
                 }
                 .listStyle(.plain)
+                
             } else {
                 Spacer()
                 
