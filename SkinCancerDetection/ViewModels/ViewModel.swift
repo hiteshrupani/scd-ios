@@ -6,20 +6,25 @@
 //
 
 import Foundation
+
 import UIKit
 import PhotosUI
+
 import CoreML
 import Vision
+
+import CoreData
 
 class ViewModel: ObservableObject {
     
     @Published var image: UIImage?
-    @Published var result: String?
     
+    @Published var result: String?
     @Published var resultProbability: [String: Double]?
     
     @Published var detectionHistory: [DetectionHistoryItem] = []
     
+    // MARK: - CreateML Functions
     func detect(_ image: UIImage, completion: @escaping (String?) -> Void) {
         // Loading the MLModel
         guard let model = try? VNCoreMLModel(for: SCD_BenignMalignant().model) else {
@@ -107,4 +112,55 @@ class ViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - History Core Data Functions
+    
+    let container: NSPersistentContainer
+    @Published var savedHistory: [DetectionHistoryEntity] = []
+    
+    init() {
+        container = NSPersistentContainer(name: "HistoryContainer")
+        container.loadPersistentStores { (description, error) in
+            if let error = error {
+                print("ERROR LOADING HISTORY: \(error)")
+            }
+        }
+        fetchHistory()
+    }
+    
+    func addHistory(date: Date, result: String) {
+        let newHistoryItem = DetectionHistoryEntity(context: container.viewContext)
+        newHistoryItem.date = date
+        newHistoryItem.result = result
+        
+        saveHistory()
+    }
+    
+    func fetchHistory() {
+        let request = NSFetchRequest<DetectionHistoryEntity>(entityName: "DetectionHistoryEntity")
+        
+        do {
+            savedHistory = try container.viewContext.fetch(request)
+        } catch {
+            print("ERROR FETCHING HISTORY: \(error)")
+        }
+    }
+    
+    func deleteHistory(indexSet: IndexSet) {
+        guard let index = indexSet.first else { return }
+        let entity = savedHistory[index]
+        container.viewContext.delete(entity)
+        
+        saveHistory()
+    }
+    
+    func saveHistory() {
+        do {
+            try container.viewContext.save()
+            fetchHistory()
+        } catch {
+            print("ERROR SAVING HISTORY: \(error)")
+        }
+    }
+    
 }
