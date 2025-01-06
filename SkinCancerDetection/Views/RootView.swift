@@ -8,7 +8,7 @@
 import SwiftUI
 import PhotosUI
 
-struct ContentView: View {
+struct RootView: View {
     
     @StateObject var vm = ViewModel()
     
@@ -32,5 +32,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    RootView()
 }
